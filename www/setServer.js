@@ -1,0 +1,1 @@
+var server="asysyifacare.000webhostapp.com";

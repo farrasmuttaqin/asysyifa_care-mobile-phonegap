@@ -1,0 +1,242 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+	<title>Asyisyifa-Care Mobile Apps</title>
+	
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<link href="css/bootstrap.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<!--js-->
+<script src="js/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="js/main.js"></script>
+<script src="js/bootstrap.js"></script>
+<script src="js/funcNumber.js"></script>
+<script src="js/md5.js"></script>
+<style>
+	{
+		padding:0;
+		margin:0;
+	}
+
+	.uc {
+		padding:5px;
+	}
+
+	.tl{
+		text-align:left;
+	}
+	#menu {
+		float:center;
+		width:180px;
+		text-decoration:none;
+		color:black;
+	}
+
+	#menu a{
+		color:black;
+	}
+
+	#menu ul li {
+		padding:5px 10px;
+	}
+
+	.active {
+		background:lightblue;
+	}
+
+	hr {
+		margin:5px 0;
+	}
+
+	.right {
+		float:left;
+		margin-left:10px;
+		margin-bottom:20px;
+	}
+
+	.tbi {
+		margin-top:10px;
+	}
+
+	.tbi td {
+		padding:5px 0;
+		width:200px;
+	}
+</style>
+<script src="setServer.js">
+</script>
+
+
+<!-- Angular JS -->
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js">
+	</script>
+
+	<script type="text/javascript">		
+
+	<!-- set timeout function -->	
+	var url = "index.html";
+    var delay = "3500";
+
+    function GoToURL()
+    {
+        if(typeof IE_fix != "undefined") // IE8 and lower fix to pass the http referer
+        {
+            var referLink = document.createElement("a");
+            referLink.href = url;
+            document.body.appendChild(referLink);
+            referLink.click();
+        }
+        else { window.location.replace(url); } // All other browsers
+    }
+	<!-- //set timeout function -->
+	
+	var app = angular.module('asyifa', []);
+	app.controller('register', function($scope, $http) {
+			
+			$scope.init = function(){
+				var email = sessionStorage.email;
+				var nama_lengkap = sessionStorage.nama_lengkap;
+				
+				if (typeof(email) == "undefined" || typeof(nama_lengkap) == "undefined")
+				{
+					var url = "index.html";
+					
+				}
+				else
+				{
+					var url = "home.html";
+					location.href=url;
+				}
+			}
+		
+		
+			$scope.funcRegister = function(){
+				
+				var nama_lengkap = document.getElementById("nama_lengkap").value;
+				var email = document.getElementById("email").value;
+				var no_hp = document.getElementById("no_hp").value;
+				
+				var password = document.getElementById("password").value;
+				
+				pass = md5(password);
+									
+					if (password.length < 6 || nama_lengkap == "" || email == "" || no_hp == "" || password == "")
+					{
+						
+					}
+					else{
+						$http.get("http://asysyifacare.000webhostapp.com/server/JSON/api_register.php?nama_lengkap="+nama_lengkap+"&nomor_hp="+no_hp+"&email="+email+"&password="+pass).then(
+						function (response) {
+							
+								
+								var kondisi = response.data.fields.records[0]["tampung"];
+								
+								if (kondisi == "failed")
+								{
+									$scope.backgroundd = "background-color:red;";
+									$scope.style_status = "color:white;";
+									$scope.status = "Maaf, Register Gagal";
+									$scope.welcome = "Email atau Nomor HP anda Sudah Terdaftar";
+									$scope.tambah = "Anda harus memasukkan Nomor HP dan Email Asli anda.";
+									$("#errModal").modal();	
+								}else {
+								
+									$scope.backgroundd = "background-color:white;";
+									$scope.style_status = "color:green;";
+									$scope.status = "Register Berhasil !!";
+									$scope.welcome = "Sekarang '"+nama_lengkap+"' dapat login di Asy-Syifa CARE";
+									$scope.tambah = "";
+									$("#errModal").modal();	
+									
+									<!-- time delayed directing to page profiles -->
+									
+									setTimeout(GoToURL, delay);
+									
+									<!-- //time delayed directing to page profiles -->
+									
+									return true;
+									
+								}
+							}, function (errorData) {
+								var url = "error.html";	
+								location.href=url;	
+								return false;
+							});
+					}
+				  }
+	});	
+	</script>
+	<!-- //Angular JS -->
+	
+	
+</head>
+	
+<body onload="init()" class="background" ng-app="asyifa" ng-controller="register" ng-init="init()">
+	<script type="text/javascript" src="cordova.js"></script>
+	<div class="fh5co-loader"></div>
+	<div id="wrapper" >
+		<div class="uc">
+			<h3 style="color:white;font-size:20px;margin-left:20px;" id="logout"></h3>
+		</div>
+		<div>
+			<p style="color:white;font-size:14px;text-align:center;margin-top:5px;">			
+			<div id ="lastUpdate"></div>
+			<!--=14 Nov 2016 12:27:34-->
+			</p>
+		</div>
+		<br><br>
+		<form>
+			<div style="margin-left:20px; margin-top: 425px; margin-right:20px; ">
+				<div style="margin-bottom: 5px;" class="col-md-6">
+				<input  type="text" class="form-control" placeholder="Nama Lengkap" id="nama_lengkap" required />
+				</div>
+				<div style="margin-bottom: 5px;" class="col-md-6">
+				<input  type="number" class="form-control" id="no_hp"  placeholder="No Hp, Contoh : 081296887453" required />
+				</div>
+				<div class="col-md-12">
+				<input style="margin-top: 5px;" type="text" pattern="[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{1,63}$" placeholder="Masukkan Email.." title=" Harus Sesuai dengan Format Email" class="form-control" placeholder="Email" id="email" required />
+				</div>
+				<div class="col-md-12">
+				<input style="margin-top: 5px;" type="password"  placeholder="Masukkan Password (min 6 karakter).." pattern=".{6,}"  title=" Password Minimal 6 Character" class="form-control" placeholder="Password" id="password" required />
+				</div>
+				<div class="col-xs-12">
+				<button style="margin-top: 5px;" type="submit" ng-click="funcRegister()" class="btn btn-primary btn-block btn-flat">Sign Up
+				</button>
+				</div>
+				<p style="text-align: center; color: white; font-size: 13px; margin-top: 3px">Already have an account ? <a href="index.html">Sign In</a></p>		 
+			</div>
+		</form>
+
+		<!-- Modal -->
+		
+		<div class="modal fade" id="errModal" role="dialog"> 
+			<div class="modal-dialog">	
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header" style={{backgroundd}}>
+					  <button type="button" class="close" data-dismiss="modal">
+					  	&times;</button>
+					  <h4 class="modal-title" style={{style_status}}>{{status}}</h4>
+					</div>
+					<div class="modal-body">
+					  <p>{{welcome}}</p>
+					</div>
+					<div class="modal-body">
+					  <p>{{tambah}}</p>
+					</div>
+					<div class="modal-footer">
+					  <button type="button" class="btn btn-default" data-dismiss="modal">
+					  	Close</button>
+					</div>
+				</div>
+			</div>
+		</div>  
+		
+		
+		
+	</div>
+</body>
+
+</html>
